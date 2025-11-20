@@ -1,31 +1,33 @@
-# Python internals
-__pycache__/
+#Python internals
+pycache/
 *.py[cod]
 *$py.class
 
-# Virtual Environment
+#Virtual Environment
 venv/
 env/
 
-# Environment Variables (Keep secrets safe!)
+#Environment Variables (Keep secrets safe!)
 .env
 
-# Database (Local data should not be committed)
+#Database (Local data should not be committed)
 *.db
 *.sqlite3
 finances.db
 
-# PyInstaller / Build Artifacts
+#PyInstaller / Build Artifacts
 *.spec
 backend/dist/
 backend/build/
 *.exe
 
-# Logs
+#Logs
 *.log
 
-# OS / IDE files
+#OS / IDE files
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
+
+node_modules/

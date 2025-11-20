@@ -1,10 +1,20 @@
-from sqlalchemy import create_engine, TypeDecorator, CHAR, String
+import sys
+import os
+from sqlalchemy import create_engine, TypeDecorator, CHAR
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import uuid
 
-# Use a local SQLite file
-SQLALCHEMY_DATABASE_URL = "sqlite:///./finances.db"
+# Determine the base path for the database
+if getattr(sys, 'frozen', False):
+    # Running as PyInstaller EXE: Store DB in the same folder as the executable
+    BASE_DIR = os.path.dirname(sys.executable)
+else:
+    # Running as script: Store DB in the project root
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+DB_PATH = os.path.join(BASE_DIR, "finances.db")
+SQLALCHEMY_DATABASE_URL = f"sqlite:///{DB_PATH}"
 
 connect_args = {"check_same_thread": False}
 
@@ -23,11 +33,8 @@ def get_db():
     finally:
         db.close()
 
-# --- SQLite Compatibility Helpers ---
 class GUID(TypeDecorator):
-    """Platform-independent GUID type.
-    Uses CHAR(36) for SQLite, storing as stringified hex values.
-    """
+    """Platform-independent GUID type for SQLite compatibility."""
     impl = CHAR
     cache_ok = True
 

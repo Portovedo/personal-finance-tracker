@@ -6,21 +6,19 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Personal Finance Tracker"
     API_V1_STR: str = "/api/v1"
     
-    # Security
-    SECRET_KEY: str = "super-secret-key-for-dev-only"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 8 days
+    # Provide a default secret key for the local desktop app to function out-of-the-box
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "local-desktop-app-fallback-key-999")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 30
     
-    # Database
-    # We override this in database.py for the exe, but good to have a default
-    DATABASE_URL: str = "sqlite:///./finances.db"
+    PLAID_CLIENT_ID: Optional[str] = os.getenv("PLAID_CLIENT_ID")
+    PLAID_SECRET: Optional[str] = os.getenv("PLAID_SECRET")
+    GEMINI_API_KEY: Optional[str] = os.getenv("GEMINI_API_KEY")
 
-    # CORS (Cross-Origin Resource Sharing)
-    BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8000"]
+    BACKEND_CORS_ORIGINS: List[str] = ["*"]
 
-    # Configuration to ignore extra fields in .env file
     model_config = SettingsConfigDict(
         env_file=".env",
-        extra="ignore", 
+        extra="ignore",
         case_sensitive=True
     )
 
