@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-6">Statement Processing</h2>
+
+<div class="bg-white p-6 rounded-lg shadow mb-8">
+    <h3 class="font-bold mb-4">Upload Statement</h3>
+    <form id="uploadForm" class="flex gap-4 items-end">
+        <div class="flex-1">
+            <label class="block text-sm mb-1">Account</label>
+            <select id="accountSelect" class="w-full p-2 border rounded" required>
+                <option value="">Select Account...</option>
+            </select>
+        </div>
+        <div class="flex-1">
+            <label class="block text-sm mb-1">File (PDF/CSV)</label>
+            <input type="file" id="fileInput" class="w-full p-2 border rounded" accept=".pdf,.csv" required>
+        </div>
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Upload</button>
+    </form>
+</div>
+
+<div class="bg-white p-6 rounded-lg shadow">
+    <h3 class="font-bold mb-4 text-yellow-600">Pending Review</h3>
+    <table class="w-full text-left">
+        <thead>
+            <tr class="border-b text-gray-500 text-sm">
+                <th class="pb-2">Date</th>
+                <th class="pb-2">Description</th>
+                <th class="pb-2 text-right">Amount</th>
+                <th class="pb-2">Action</th>
+            </tr>
+        </thead>
+        <tbody id="pendingTable"></tbody>
+    </table>
+</div>
+
+<script>
+    async function loadData() {
+        // Load Accounts for Select
+        const accRes = await axios.get('/api/v1/accounts/');
+        const select = document.getElementById('accountSelect');
+        select.innerHTML = '<option value="">Select Account...</option>' + 
+            accRes.data.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+
+        // Load Pending Transactions
+        const txRes = await axios.get('/api/v1/transactions/?status=pending');
+        const tbody = document.getElementById('pendingTable');
+        tbody.innerHTML = txRes.data.map(t => `
+            <tr class="border-b">
+                <td class="py-3">${new Date(t.transaction_date).toLocaleDateString()}</td>
+                <td class="py-3">${t.description}</td>
+                <td class="py-3 text-right font-mono ${t.type === 'debit' ? 'text-red-600' : 'text-green-600'}">
+                    ${t.type === 'debit' ? '-' : '+'}${Math.abs(t.amount)}
+                </td>
+                <td class="py-3">
+                    <button onclick="approveTx(${t.id})" class="text-green-600 font-bold hover:underline">Approve</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    async function approveTx(id) {
+        await axios.put(`/api/v1/transactions/${id}`, { status: 'completed' });
+        loadData();
+    }
+
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const file = document.getElementById('fileInput').files[0];
+        const accId = document.getElementById('accountSelect').value;
+        
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('account_id', accId);
+        
+        try {
+            await axios.post('/api/v1/files/upload', fd);
+            alert('File uploaded! Processing...');
+            loadData();
+        } catch(err) {
+            alert('Upload failed');
+        }
+    });
+
+    loadData();
+</script>
+{% endblock %}

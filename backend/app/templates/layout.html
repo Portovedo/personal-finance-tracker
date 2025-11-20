@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-white shadow-md">
+            <div class="p-6 border-b">
+                <h1 class="text-xl font-bold text-blue-600">FinanceTracker</h1>
+            </div>
+            <nav class="p-4 space-y-2">
+                <a href="/" class="block p-3 rounded hover:bg-blue-50 text-gray-700">Dashboard</a>
+                <a href="/accounts" class="block p-3 rounded hover:bg-blue-50 text-gray-700">Accounts</a>
+                <a href="/statements" class="block p-3 rounded hover:bg-blue-50 text-gray-700">Statements</a>
+                <a href="/categories" class="block p-3 rounded hover:bg-blue-50 text-gray-700">Categories</a>
+            </nav>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto p-8">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+    <script src="/static/app.js"></script>
+</body>
+</html>
